@@ -1,6 +1,10 @@
-from pathlib import Path
+from google import genai
+from dotenv import load_dotenv
+import os
 
-p = Path("My Documents")
-print("Exists:", p.exists())
-print("Absolute path:", p.resolve())
-print("Files:", list(p.rglob("*")))
+load_dotenv()
+
+client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
+
+for model in client.models.list():
+    print(model.name)

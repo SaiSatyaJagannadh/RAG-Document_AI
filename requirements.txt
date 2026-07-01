@@ -9,3 +9,4 @@ pypdf
 langchain-huggingface
 sentence-transformers
 langchain-community
+langchain-tavily

@@ -1,10 +1,6 @@
-from google import genai
-from dotenv import load_dotenv
 import os
+from pathlib import Path
 
-load_dotenv()
-
-client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
-
-for model in client.models.list():
-    print(model.name)
+print("Current working directory:", os.getcwd())
+print("This file:", Path(__file__).resolve())
+print("TAVILY_API_KEY:", os.getenv("TAVILY_API_KEY"))

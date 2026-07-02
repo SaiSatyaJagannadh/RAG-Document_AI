@@ -9,18 +9,8 @@ from langchain_openai import ChatOpenAI
 env_path = Path(__file__).resolve().parent / ".env"
 load_dotenv(dotenv_path=env_path, override=True)
 
-# Uncomment these to verify your keys are loading
-# print("OPENAI_API_KEY:", os.getenv("OPENAI_API_KEY"))
-# print("TAVILY_API_KEY:", os.getenv("TAVILY_API_KEY"))
 
-queries = [
-    "coffee health benefits",
-    "organic coffee benefits studies",
-    "coffee antioxidants wellness",
-]
-
-
-def search_for_articles(queries):
+def search_for_articles(query):
     tavily_search = TavilySearch(
         max_results=5,
         topic="news",
@@ -30,36 +20,34 @@ def search_for_articles(queries):
         include_answer=False,
     )
 
-    all_results = []
-
-    for query in queries:
-        results = tavily_search.invoke(query)
-        all_results.append(results)
-
-    return all_results
+    results = tavily_search.invoke(query)
+    return results
 
 
-def generate_newsletter(search_results):
+def generate_description(search_results, topic):
     prompt = f"""
-You are a professional newsletter writer for an organic coffee business.
+You are a professional content writer.
 
-Below are the search results for this week's coffee news.
+Write a detailed markdown article about:
+
+TOPIC:
+{topic}
 
 SEARCH RESULTS:
 {search_results}
 
-Write the article in markdown format.
-
 Rules:
-- Focus on positive news about coffee.
-- Use headings and bullet points where appropriate.
-- Include a short introduction.
-- Include a conclusion.
-- At the end, provide references using the URLs from the search results.
+- Use markdown.
+- Add a title.
+- Add an introduction.
+- Use headings.
+- Use bullet points where appropriate.
+- End with a conclusion.
+- Add a References section using the URLs from the search results.
 """
 
     model = ChatOpenAI(
-        model="gpt-4.1-mini",   # You can also use "gpt-4.1"
+        model="gpt-4.1-mini",
         temperature=0.5,
     )
 
@@ -68,12 +56,16 @@ Rules:
 
 
 if __name__ == "__main__":
-    search_results = search_for_articles(queries)
-    article = generate_newsletter(search_results)
+    topic = input("Enter topic to research: ")
 
-    print(article)
+    print("\nSearching...\n")
+    search_results = search_for_articles(topic)
 
-    with open("article.md", "w", encoding="utf-8") as file:
+    print("Generating article...\n")
+    article = generate_description(search_results, topic)
+
+    with open("description.md", "w", encoding="utf-8") as file:
         file.write(article)
 
-    print("\n✅ Newsletter saved to article.md")
+    print(article)
+    print("\n✅ Saved as description.md")
